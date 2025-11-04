@@ -32,6 +32,87 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
+        /* Dashboard Header */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: #96CEB4;
+            border-bottom: 2px solid #FFAD60;
+        }
+
+        .logo-upload-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-upload-btn {
+            padding: 10px 20px;
+            background: #FFAD60;
+            color: #2D2D2D;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Alata', sans-serif;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .logo-upload-btn:hover {
+            background: #A02334;
+            color: #FFEEAD;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .theme-btn, .embed-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Alata', sans-serif;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn {
+            background: #A02334;
+            color: #FFEEAD;
+        }
+
+        .theme-btn:hover {
+            background: #7a1a27;
+        }
+
+        .embed-btn {
+            background: #FFAD60;
+            color: #2D2D2D;
+        }
+
+        .embed-btn:hover {
+            background: #e69a50;
+        }
+
+        .logo-preview {
+            padding: 20px 30px;
+            background: #96CEB4;
+            text-align: center;
+            color: #2D2D2D;
+            font-style: italic;
+        }
+
+        .logo-preview img {
+            max-width: 200px;
+            max-height: 100px;
+            border-radius: 8px;
+        }
+
         .tabs {
             display: flex;
             background: #96CEB4;
@@ -819,6 +900,27 @@
 </head>
 <body>
     <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+
+            <!-- Logo Upload Button (Left) -->
+            <div class="logo-upload-container">
+                <label for="logo-upload" class="logo-upload-btn">Upload Logo</label>
+                <input type="file" id="logo-upload" accept="image/*" hidden onchange="previewLogo(event)">
+            </div>
+
+            <!-- Right-side Action Buttons -->
+            <div class="header-buttons">
+                <button class="theme-btn" onclick="openThemeCustomizer()">🎨 Customize Theme</button>
+                <button class="embed-btn" onclick="openEmbedGenerator()">🔗 Get Embed Code</button>
+            </div>
+        </div>
+
+        <!-- Preview Area (optional) -->
+        <div class="logo-preview" id="logoPreviewArea">
+            <p>No logo uploaded yet</p>
+        </div>
+
         <!-- Navigation Tabs -->
         <div class="tabs">
             <button class="tab active" onclick="switchTab(event, 'grammar')">Grammar</button>
@@ -2679,7 +2781,48 @@
         function goToUpgrade() {
             window.location.href = '/pricing'; // Update with your pricing page URL
         }
-        
+
+        // ===========================================
+        // DASHBOARD HEADER FUNCTIONS
+        // ===========================================
+
+        function previewLogo(event) {
+            const file = event.target.files[0];
+            const previewArea = document.getElementById('logoPreviewArea');
+
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewArea.innerHTML = `<img src="${e.target.result}" alt="Logo Preview">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewArea.innerHTML = '<p>Invalid file type. Please upload an image.</p>';
+            }
+        }
+
+        function openThemeCustomizer() {
+            alert('Theme Customizer coming soon! This feature will allow you to customize colors, fonts, and layout.');
+            // TODO: Implement theme customizer modal
+        }
+
+        function openEmbedGenerator() {
+            const embedCode = `<iframe src="${window.location.href}" width="100%" height="600" frameborder="0"></iframe>`;
+
+            // Create a modal or alert with the embed code
+            const message = `Copy this code to embed the dashboard:\n\n${embedCode}`;
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(embedCode).then(() => {
+                    alert('Embed code copied to clipboard!\n\n' + embedCode);
+                }).catch(() => {
+                    alert(message);
+                });
+            } else {
+                alert(message);
+            }
+        }
+
         // ===========================================
         // INITIALIZE ON LOAD
         // ===========================================
