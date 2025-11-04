@@ -1,0 +1,2690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESL Learning Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Darumadrop+One&family=Alata&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Alata', sans-serif;
+            background-color: #FFEEAD;
+            color: #2D2D2D;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #96CEB4;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            background: #96CEB4;
+            padding: 0;
+            border-bottom: 2px solid #FFAD60;
+            justify-content: space-between;
+            gap: 0;
+            width: 100%;
+        }
+
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #2D2D2D;
+            border: none;
+            background: transparent;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: -2px;
+            flex: 1;
+            text-align: center;
+            font-family: 'Alata', sans-serif;
+        }
+
+        .tab:hover {
+            color: #A02334;
+        }
+
+        .tab.active {
+            color: #A02334;
+            border-bottom-color: #A02334;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.4s ease;
+            position: relative;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Inner Content Box */
+        .content-box {
+            background: #FFAD60;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        /* Grid Layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        /* Card Styles */
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .content-card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .content-card.locked {
+            opacity: 0.7;
+        }
+
+        .content-card.locked:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Difficulty Tags */
+        .difficulty-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            z-index: 10;
+        }
+
+        .difficulty-beginner {
+            background: #03A6A1;
+            color: white;
+        }
+
+        .difficulty-intermediate {
+            background: #FEFBC7;
+            color: #2D2D2D;
+        }
+
+        .difficulty-advanced {
+            background: #B8001F;
+            color: white;
+        }
+
+        /* Favorite Button */
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: white;
+            border: 2px solid #A02334;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .favorite-btn.favorited {
+            background: #A02334;
+            color: white;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-section span {
+            font-weight: 600;
+            color: #2D2D2D;
+            font-family: 'Alata', sans-serif;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 2px solid #A02334;
+            background: white;
+            color: #A02334;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Alata', sans-serif;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .filter-btn:hover {
+            background: #A02334;
+            color: white;
+        }
+
+        .filter-btn.active {
+            background: #A02334;
+            color: white;
+        }
+
+        /* Lock Icon */
+        .lock-svg {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin-right: 6px;
+            vertical-align: middle;
+            fill: #000000;
+        }
+
+        /* Card Content */
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2D2D2D;
+            margin-bottom: 10px;
+            margin-top: 50px;
+        }
+
+        .card-description {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9em;
+            color: #2D2D2D;
+            margin-bottom: 15px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            padding: 14px 24px;
+            font-size: 1em;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            border: none;
+            background: #A02334;
+            color: white;
+            font-family: 'Alata', sans-serif;
+        }
+
+        .btn-primary:hover {
+            background: #7a1a28;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 14px 24px;
+            font-size: 1em;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            background: white;
+            color: #A02334;
+            border: 2px solid #A02334;
+            font-family: 'Alata', sans-serif;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #FFEEAD;
+            transform: translateY(-2px);
+        }
+
+        /* Writing Tab Specific */
+        .writing-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .writing-input {
+            width: 100%;
+            min-height: 300px;
+            padding: 20px;
+            border: 2px solid #E0DED9;
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: 'Alata', sans-serif;
+            resize: vertical;
+            margin-bottom: 20px;
+        }
+
+        .file-upload {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px dashed #A02334;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            background: #FFEEAD;
+        }
+
+        .correction-display {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .correction-display.active {
+            display: block;
+        }
+
+        .correction-section {
+            margin-bottom: 30px;
+        }
+
+        .correction-section h3 {
+            color: #A02334;
+            margin-bottom: 15px;
+            font-family: 'Darumadrop One', cursive;
+            font-weight: 400;
+        }
+
+        .correction-text {
+            background: #F5F3EF;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .error-highlight {
+            background: #FFE5E5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .correction-item {
+            background: #F5F3EF;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #A02334;
+        }
+
+        /* Listening Tab */
+        .audio-player {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        /* Quiz Modal Styles - NEW */
+        .quiz-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .quiz-modal-overlay.active {
+            display: flex;
+        }
+
+        .quiz-modal {
+            background: white;
+            border-radius: 16px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .quiz-header {
+            background: #A02334;
+            color: white;
+            padding: 25px 30px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-header h2 {
+            font-family: 'Darumadrop One', cursive;
+            font-size: 1.8em;
+            font-weight: 400;
+        }
+
+        .quiz-close-btn {
+            background: white;
+            color: #A02334;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quiz-close-btn:hover {
+            background: #FFEEAD;
+            transform: rotate(90deg);
+        }
+
+        .quiz-content {
+            padding: 30px;
+        }
+
+        .quiz-question {
+            margin-bottom: 35px;
+            padding: 25px;
+            background: #F5F3EF;
+            border-radius: 12px;
+        }
+
+        .quiz-question h4 {
+            color: #2D2D2D;
+            margin-bottom: 20px;
+            font-size: 1.15em;
+            font-weight: 600;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            padding: 15px 20px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quiz-option:hover {
+            border-color: #A02334;
+            background: #FFEEAD;
+        }
+
+        .quiz-option.selected {
+            background: #FFEEAD;
+            border-color: #A02334;
+        }
+
+        .quiz-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .quiz-submit-btn {
+            background: #A02334;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Alata', sans-serif;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .quiz-submit-btn:hover {
+            background: #7a1a28;
+            transform: translateY(-2px);
+        }
+
+        .quiz-results {
+            display: none;
+            background: #F5F3EF;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .quiz-results.active {
+            display: block;
+        }
+
+        .quiz-score {
+            font-size: 3em;
+            color: #A02334;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* Speaking Practice - Scenario Cards */
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .scenario-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .scenario-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-color: #A02334;
+        }
+
+        .scenario-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .scenario-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2D2D2D;
+            margin-bottom: 8px;
+        }
+
+        .scenario-role {
+            font-size: 1em;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .scenario-description {
+            font-style: italic;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        /* Chat Message Styles */
+        .chat-message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            line-height: 1.5;
+            animation: messageSlide 0.3s ease;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-message.user {
+            background: #A02334;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .chat-message.ai {
+            background: white;
+            color: #2D2D2D;
+            margin-right: auto;
+            border: 2px solid #E0DED9;
+        }
+
+        .chat-message .sender {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .chat-message.user .sender {
+            color: #FFEEAD;
+        }
+
+        .chat-message.ai .sender {
+            color: #A02334;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 15px;
+            background: white;
+            border: 2px solid #E0DED9;
+            border-radius: 12px;
+            max-width: 80px;
+            margin-bottom: 15px;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #A02334;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
+        /* Reading Tab - Book Display */
+        .book-reader {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            max-height: 600px;
+            overflow-y: auto;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        /* Upgrade Modal */
+        .upgrade-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .upgrade-overlay.active {
+            display: flex;
+        }
+
+        .upgrade-modal {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .upgrade-modal h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #2D2D2D;
+        }
+
+        .upgrade-modal p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+
+        .btn-upgrade {
+            background: #2D2D2D;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .btn-upgrade:hover {
+            background: #1a1a1a;
+            transform: translateY(-2px);
+        }
+
+        .link-maybe-later {
+            color: #666;
+            text-decoration: underline;
+            font-size: 1em;
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: color 0.3s ease;
+        }
+
+        .link-maybe-later:hover {
+            color: #2D2D2D;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .tabs {
+                overflow-x: auto;
+                justify-content: flex-start;
+            }
+
+            .tab {
+                padding: 12px 15px;
+                font-size: 0.95em;
+                white-space: nowrap;
+                flex: 0 0 auto;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quiz-modal {
+                width: 95%;
+                max-height: 90vh;
+            }
+
+            .quiz-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(event, 'grammar')">Grammar</button>
+            <button class="tab" onclick="switchTab(event, 'reading')">Reading</button>
+            <button class="tab" onclick="switchTab(event, 'writing')">Writing</button>
+            <button class="tab" onclick="switchTab(event, 'listening')">Listening</button>
+            <button class="tab" onclick="switchTab(event, 'speaking')">Speaking</button>
+        </div>
+
+        <!-- GRAMMAR TAB -->
+        <div id="grammar" class="tab-content active">
+            <!-- Video Grid View -->
+            <div id="grammarGridView" class="content-box">
+                <div class="filter-section">
+                    <span>Filter:</span>
+                    <button class="filter-btn active" onclick="filterContent('grammar', 'all')">All</button>
+                    <button class="filter-btn" onclick="filterContent('grammar', 'favorites')">⭐ Favorites</button>
+                    <button class="filter-btn" onclick="filterContent('grammar', 'beginner')">Beginner</button>
+                    <button class="filter-btn" onclick="filterContent('grammar', 'intermediate')">Intermediate</button>
+                    <button class="filter-btn" onclick="filterContent('grammar', 'advanced')">Advanced</button>
+                </div>
+
+                <div class="content-grid" id="grammarGrid">
+                    <!-- Grammar videos will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Video Player View -->
+            <div id="grammarVideoView" style="display: none;">
+                <div class="content-box">
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-secondary" onclick="closeVideoPlayer()" style="flex: 1; min-width: 200px; max-width: 300px;">
+                            ← Back to Videos
+                        </button>
+                        <button class="btn-primary" onclick="openQuizModal('grammar', currentVideoId)" id="videoQuizBtn" style="flex: 1; min-width: 200px; max-width: 300px;">
+                            ❓ Take Quiz
+                        </button>
+                    </div>
+                    
+                    <div style="background: white; padding: 30px; border-radius: 12px;">
+                        <h2 id="videoTitle" style="font-family: 'Darumadrop One', cursive; color: #A02334; margin-bottom: 20px; font-weight: 400;">
+                        </h2>
+                        
+                        <!-- Video Player Container -->
+                        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000;">
+                            <iframe id="videoPlayer" 
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                        
+                        <div id="videoDescription" style="margin-top: 20px; color: #666; font-size: 1.1em; line-height: 1.6;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- READING TAB -->
+        <div id="reading" class="tab-content">
+            <!-- Books Grid View -->
+            <div id="readingGridView" class="content-box">
+                <div class="filter-section">
+                    <span>Filter:</span>
+                    <button class="filter-btn active" onclick="filterContent('reading', 'all')">All</button>
+                    <button class="filter-btn" onclick="filterContent('reading', 'favorites')">⭐ Favorites</button>
+                    <button class="filter-btn" onclick="filterContent('reading', 'beginner')">Beginner</button>
+                    <button class="filter-btn" onclick="filterContent('reading', 'intermediate')">Intermediate</button>
+                    <button class="filter-btn" onclick="filterContent('reading', 'advanced')">Advanced</button>
+                </div>
+
+                <div class="content-grid" id="readingGrid">
+                    <!-- Books will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Book Reader View -->
+            <div id="readingBookView" style="display: none;">
+                <div class="content-box">
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-secondary" onclick="closeBookReader()" style="flex: 1; min-width: 200px; max-width: 300px;">
+                            ← Back to Books
+                        </button>
+                        <button class="btn-primary" onclick="openQuizModal('reading', currentBookId)" id="bookQuizBtn" style="flex: 1; min-width: 200px; max-width: 300px;">
+                            ❓ Take Quiz
+                        </button>
+                    </div>
+                    
+                    <div style="background: white; padding: 40px; border-radius: 12px;">
+                        <h2 id="bookTitle" style="font-family: 'Darumadrop One', cursive; color: #A02334; margin-bottom: 10px; font-weight: 400;">
+                        </h2>
+                        <p id="bookAuthor" style="color: #666; margin-bottom: 30px; font-size: 1.1em;">
+                        </p>
+                        
+                        <!-- Book Content Container -->
+                        <div id="bookContent" class="book-reader">
+                            <!-- Book text or PDF will be displayed here -->
+                            <p style="color: #666; text-align: center; padding: 60px 20px;">
+                                📚 Book content will appear here.<br><br>
+                                <strong>To integrate:</strong><br>
+                                • For PDFs: Use PDF.js library<br>
+                                • For text: Add book content to the data structure<br>
+                                • For external books: Use iframe embed
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WRITING TAB -->
+        <div id="writing" class="tab-content">
+            <div class="writing-container">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="font-family: 'Darumadrop One', cursive; color: #A02334; font-size: 2em; font-weight: 400; margin-bottom: 10px;">
+                        AI Writing Correction
+                    </h2>
+                    <p style="color: #2D2D2D; font-size: 1.1em;">
+                        Write your essay below or upload a file for AI-powered corrections and explanations
+                    </p>
+                </div>
+
+                <div class="content-box">
+                    <!-- Text Input -->
+                    <textarea 
+                        id="writingInput" 
+                        class="writing-input" 
+                        placeholder="Type or paste your essay here... (Max 1000 words for Grow/Star members, 300 words for free tier)"
+                    ></textarea>
+
+                    <!-- File Upload -->
+                    <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                        <div style="font-size: 2em; margin-bottom: 10px;">📄</div>
+                        <div style="font-weight: 600; margin-bottom: 5px;">Upload Your Essay</div>
+                        <div style="color: #666; font-size: 0.9em;">Supports .txt, .docx files</div>
+                        <input type="file" id="fileInput" style="display: none;" accept=".txt,.docx" onchange="handleFileUpload(event)">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button class="btn-primary" onclick="correctWriting()">
+                        ✨ Correct My Writing
+                    </button>
+
+                    <!-- Correction Display -->
+                    <div id="correctionDisplay" class="correction-display">
+                        <div class="correction-section">
+                            <h3>📝 Your Original Text</h3>
+                            <div class="correction-text" id="originalText"></div>
+                        </div>
+
+                        <div class="correction-section">
+                            <h3>✅ Corrected Version</h3>
+                            <div class="correction-text" id="correctedText"></div>
+                        </div>
+
+                        <div class="correction-section">
+                            <h3>💡 Explanations</h3>
+                            <div id="explanations"></div>
+                        </div>
+
+                        <button class="btn-secondary" onclick="downloadCorrection()">
+                            📥 Download Corrected Version
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LISTENING TAB -->
+        <div id="listening" class="tab-content">
+            <!-- Listening Exercises Grid View -->
+            <div id="listeningGridView" class="content-box">
+                <div class="filter-section">
+                    <span>Filter:</span>
+                    <button class="filter-btn active" onclick="filterContent('listening', 'all')">All</button>
+                    <button class="filter-btn" onclick="filterContent('listening', 'favorites')">⭐ Favorites</button>
+                    <button class="filter-btn" onclick="filterContent('listening', 'beginner')">Beginner</button>
+                    <button class="filter-btn" onclick="filterContent('listening', 'intermediate')">Intermediate</button>
+                    <button class="filter-btn" onclick="filterContent('listening', 'advanced')">Advanced</button>
+                </div>
+
+                <div class="content-grid" id="listeningGrid">
+                    <!-- Listening exercises will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Audio Player View -->
+            <div id="listeningAudioView" style="display: none;">
+                <div class="content-box">
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-secondary" onclick="closeAudioPlayer()" style="flex: 1; min-width: 200px; max-width: 300px;">
+                            ← Back to Exercises
+                        </button>
+                        <button class="btn-primary" onclick="openQuizModal('listening', currentAudioId)" id="audioQuizBtn" style="flex: 1; min-width: 200px; max-width: 300px;">
+                            ❓ Take Quiz
+                        </button>
+                    </div>
+                    
+                    <div style="background: white; padding: 40px; border-radius: 12px;">
+                        <h2 id="audioTitle" style="font-family: 'Darumadrop One', cursive; color: #A02334; margin-bottom: 10px; font-weight: 400;">
+                        </h2>
+                        <p id="audioDescription" style="color: #666; margin-bottom: 30px; font-size: 1.1em;">
+                        </p>
+                        
+                        <!-- Audio Player -->
+                        <div style="background: #F5F3EF; padding: 30px; border-radius: 12px; margin-bottom: 20px;">
+                            <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">🎧</div>
+                            <audio id="audioElement" controls style="width: 100%; margin-bottom: 15px;">
+                                Your browser does not support the audio element.
+                            </audio>
+                            
+                            <!-- Playback Speed Controls -->
+                            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                                <button onclick="setPlaybackSpeed(0.75)" class="filter-btn" style="font-size: 0.85em;">
+                                    0.75x (Slow)
+                                </button>
+                                <button onclick="setPlaybackSpeed(1)" class="filter-btn active" id="speedNormal" style="font-size: 0.85em;">
+                                    1x (Normal)
+                                </button>
+                                <button onclick="setPlaybackSpeed(1.25)" class="filter-btn" style="font-size: 0.85em;">
+                                    1.25x (Fast)
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Collapsible Transcript Button & Container -->
+                        <div id="transcriptSection" style="display: none;">
+                            <button onclick="toggleTranscript()" class="btn-secondary" id="transcriptToggleBtn" style="width: 100%; max-width: 100%; margin-bottom: 15px;">
+                                📝 Show Transcript
+                            </button>
+                            
+                            <!-- Transcript Container -->
+                            <div id="transcriptContainer" style="display: none; background: #F5F3EF; padding: 30px; border-radius: 12px; line-height: 1.8;">
+                                <h3 style="color: #A02334; margin-bottom: 15px; font-family: 'Darumadrop One', cursive; font-weight: 400;">
+                                    📄 Transcript
+                                </h3>
+                                <div id="transcriptContent">
+                                    <!-- Transcript will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SPEAKING TAB -->
+        <div id="speaking" class="tab-content">
+            <!-- Scenario Grid View -->
+            <div id="speakingGridView" style="max-width: 900px; margin: 0 auto;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="font-family: 'Darumadrop One', cursive; color: #A02334; font-size: 2em; font-weight: 400; margin-bottom: 10px;">
+                        English Role-Playing Practice
+                    </h2>
+                    <p style="color: #2D2D2D; font-size: 1.1em;">
+                        Practice real-world English conversations with AI-powered role-playing scenarios
+                    </p>
+                </div>
+
+                <div class="content-box">
+                    <div class="filter-section">
+                        <span>Filter:</span>
+                        <button class="filter-btn active" onclick="filterContent('speaking', 'all')">All</button>
+                        <button class="filter-btn" onclick="filterContent('speaking', 'favorites')">⭐ Favorites</button>
+                        <button class="filter-btn" onclick="filterContent('speaking', 'beginner')">Beginner</button>
+                        <button class="filter-btn" onclick="filterContent('speaking', 'intermediate')">Intermediate</button>
+                        <button class="filter-btn" onclick="filterContent('speaking', 'advanced')">Advanced</button>
+                    </div>
+
+                    <div class="scenario-grid" id="speakingGrid">
+                        <!-- Speaking scenarios will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Role-Play Practice View -->
+            <div id="speakingPracticeView" style="display: none;">
+                <div class="content-box">
+                    <button class="btn-secondary" onclick="closeSpeakingPractice()" style="max-width: 300px; margin-bottom: 20px;">
+                        ← Back to Scenarios
+                    </button>
+                    
+                    <div style="background: white; padding: 30px; border-radius: 12px;">
+                        <!-- Character Info -->
+                        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px; padding: 20px; background: #F5F3EF; border-radius: 12px;">
+                            <div id="scenarioIcon" style="font-size: 4em;">🏨</div>
+                            <div style="flex: 1;">
+                                <h2 id="scenarioName" style="font-family: 'Darumadrop One', cursive; color: #A02334; margin-bottom: 5px; font-weight: 400;">
+                                </h2>
+                                <p id="scenarioRole" style="color: #666; font-size: 1.1em; margin-bottom: 5px;"></p>
+                                <p id="scenarioDescription" style="color: #888; font-style: italic;"></p>
+                            </div>
+                        </div>
+
+                        <!-- Chat Area -->
+                        <div id="chatArea" style="background: #F5F3EF; border-radius: 12px; padding: 20px; min-height: 400px; max-height: 500px; overflow-y: auto; margin-bottom: 20px;">
+                            <div id="chatMessages">
+                                <!-- Messages will appear here -->
+                            </div>
+                        </div>
+
+                        <!-- Input Area -->
+                        <div style="display: flex; gap: 10px;">
+                            <input 
+                                type="text" 
+                                id="messageInput" 
+                                placeholder="Type your message here..."
+                                style="flex: 1; padding: 15px; border: 2px solid #E0DED9; border-radius: 8px; font-size: 1em; font-family: 'Alata', sans-serif;"
+                                onkeypress="if(event.key === 'Enter') sendMessage()"
+                            >
+                            <button onclick="sendMessage()" class="btn-primary" style="width: auto; padding: 15px 30px;">
+                                Send 📤
+                            </button>
+                        </div>
+
+                        <!-- Voice Input Option (Optional) -->
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button onclick="startVoiceInput()" class="btn-secondary" style="max-width: 250px;">
+                                🎤 Voice Call
+                            </button>
+                            <p style="color: #888; font-size: 0.9em; margin-top: 10px;">
+                                Speak your message instead of typing
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Modal - NEW -->
+    <div id="quizModalOverlay" class="quiz-modal-overlay">
+        <div class="quiz-modal">
+            <div class="quiz-header">
+                <h2 id="quizModalTitle">Quiz</h2>
+                <button class="quiz-close-btn" onclick="closeQuizModal()">×</button>
+            </div>
+            <div class="quiz-content" id="quizModalContent">
+                <!-- Quiz questions will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div id="upgradeOverlay" class="upgrade-overlay">
+        <div class="upgrade-modal">
+            <h2>Premium Content</h2>
+            <p id="upgradeMessage">Upgrade your membership to access this content!</p>
+            <button class="btn-upgrade" onclick="goToUpgrade()">View Plans</button>
+            <br>
+            <button class="link-maybe-later" onclick="closeUpgradeModal()">Maybe later</button>
+        </div>
+    </div>
+
+    <script>
+        // ===========================================
+        // CONFIGURATION
+        // ===========================================
+        
+        // UPDATED PRICING TIERS
+        // Change this to test different membership tiers: 'free', 'grow', or 'star'
+        let userMembershipTier = 'free'; // Options: 'free', 'grow', 'star'
+        
+        // NEW PREVIEW SYSTEM:
+        // - First 3 items in EACH tab are available for ALL users (free preview)
+        // - Free Plan: Grammar (all) + First 3 items of each tab
+        // - Grow Plan: Grammar (all) + Reading (all) + Writing (all) + First 3 previews
+        // - Star Plan: Everything unlocked
+        
+        // Lock icon SVG
+        const lockIcon = `<svg class="lock-svg" viewBox="0 0 448 512" fill="#000000" xmlns="http://www.w3.org/2000/svg"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg>`;
+        
+        // ===========================================
+        // DATA STRUCTURES
+        // ===========================================
+        
+        // Grammar Videos
+        const grammarVideos = [
+            {
+                id: 'grammar-1',
+                title: 'Present Simple Tense',
+                description: 'Learn how to use present simple tense in everyday conversations.',
+                videoUrl: 'https://www.youtube.com/embed/9MusOMiliZo',
+                duration: '15 min',
+                difficulty: 'beginner',
+                tier: 'free', // First 3 items available to all
+                hasQuiz: true
+            },
+            {
+                id: 'grammar-2',
+                title: 'Past Simple vs Present Perfect',
+                description: 'Understanding the difference between past simple and present perfect.',
+                videoUrl: 'YOUR_YOUTUBE_EMBED_URL',
+                duration: '20 min',
+                difficulty: 'intermediate',
+                tier: 'free', // First 3 items available to all
+                hasQuiz: true
+            },
+            {
+                id: 'grammar-3',
+                title: 'Articles: A, An, The',
+                description: 'Master the use of articles in English grammar.',
+                videoUrl: 'YOUR_YOUTUBE_EMBED_URL',
+                duration: '18 min',
+                difficulty: 'beginner',
+                tier: 'free', // First 3 items available to all
+                hasQuiz: true
+            },
+            {
+                id: 'grammar-4',
+                title: 'Conditionals: If Clauses',
+                description: 'Learn all types of conditional sentences.',
+                videoUrl: 'YOUR_YOUTUBE_EMBED_URL',
+                duration: '25 min',
+                difficulty: 'advanced',
+                tier: 'free', // Grammar is free for all plans
+                hasQuiz: true
+            },
+            {
+                id: 'grammar-5',
+                title: 'Modal Verbs: Can, Could, May, Might',
+                description: 'Understanding modal verbs and their usage.',
+                videoUrl: 'YOUR_YOUTUBE_EMBED_URL',
+                duration: '22 min',
+                difficulty: 'intermediate',
+                tier: 'free', // Grammar is free for all plans
+                hasQuiz: true
+            }
+        ];
+        
+        // Reading Materials
+        const readingMaterials = [
+            {
+                id: 'book-1',
+                title: 'The Little Prince',
+                author: 'Antoine de Saint-Exupéry',
+                description: 'A classic tale about a young prince exploring the universe.',
+                pages: '96 pages',
+                difficulty: 'beginner',
+                tier: 'free', // First 3 items available to preview
+                hasQuiz: true,
+                quizQuestions: 10
+            },
+            {
+                id: 'book-2',
+                title: 'Short Stories for ESL',
+                author: 'Various Authors',
+                description: 'Collection of graded short stories perfect for ESL learners.',
+                pages: '120 pages',
+                difficulty: 'intermediate',
+                tier: 'free', // First 3 items available to preview
+                hasQuiz: true,
+                quizQuestions: 15
+            },
+            {
+                id: 'book-3',
+                title: 'Business English Articles',
+                author: 'ESL Business Collection',
+                description: 'Articles covering various business topics and scenarios.',
+                pages: '80 pages',
+                difficulty: 'advanced',
+                tier: 'free', // First 3 items available to preview
+                hasQuiz: true,
+                quizQuestions: 12
+            },
+            {
+                id: 'book-4',
+                title: 'Everyday Conversations',
+                author: 'ESL Practice Team',
+                description: 'Common daily conversations and dialogues.',
+                pages: '65 pages',
+                difficulty: 'beginner',
+                tier: 'grow', // Locked for free users
+                hasQuiz: true,
+                quizQuestions: 8
+            },
+            {
+                id: 'book-5',
+                title: 'Academic Writing Guide',
+                author: 'Dr. Sarah Williams',
+                description: 'Master academic writing for tests and essays.',
+                pages: '150 pages',
+                difficulty: 'advanced',
+                tier: 'grow', // Locked for free users
+                hasQuiz: true,
+                quizQuestions: 15
+            }
+        ];
+        
+        // Listening Exercises
+        const listeningExercises = [
+            {
+                id: 'listening-1',
+                title: 'Ordering Food at a Restaurant',
+                description: 'Listen to a conversation between a customer and waiter.',
+                audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+                duration: '3 min',
+                difficulty: 'beginner',
+                tier: 'free', // First 3 items available to preview
+                hasTranscript: true,
+                transcript: `Waiter: Good evening! Welcome to Mario's Italian Restaurant. How many people are in your party?\n\nCustomer: Just two, please.\n\nWaiter: Perfect! Follow me this way. Here's your table. Can I start you off with some drinks?\n\nCustomer: Yes, I'll have a glass of water, please.\n\nWaiter: And for you, sir?\n\nCustomer 2: I'll have a Coke, please.\n\nWaiter: Great! I'll be right back with your drinks. Here are your menus.`,
+                hasQuiz: true,
+                quizQuestions: 5
+            },
+            {
+                id: 'listening-2',
+                title: 'Job Interview Dialogue',
+                description: 'Professional conversation between interviewer and candidate.',
+                audioUrl: 'YOUR_AUDIO_URL.mp3',
+                duration: '5 min',
+                difficulty: 'intermediate',
+                tier: 'free', // First 3 items available to preview
+                hasTranscript: true,
+                transcript: `Interviewer: Good morning! Thank you for coming in today. Please, have a seat.\n\nCandidate: Good morning! Thank you for having me. I'm excited about this opportunity.\n\nInterviewer: Great! Let's start with you telling me a bit about yourself and why you're interested in this position.\n\nCandidate: Of course. I have five years of experience in digital marketing, and I've been following your company for quite some time.`,
+                hasQuiz: true,
+                quizQuestions: 8
+            },
+            {
+                id: 'listening-3',
+                title: 'Business Meeting Discussion',
+                description: 'Complex business discussion with multiple speakers.',
+                audioUrl: 'YOUR_AUDIO_URL.mp3',
+                duration: '7 min',
+                difficulty: 'advanced',
+                tier: 'free', // First 3 items available to preview
+                hasTranscript: true,
+                transcript: `CEO: Good morning, everyone. Let's get started with our Q2 review. Sarah, can you walk us through the sales figures?\n\nSales Director: Certainly. Q2 was challenging but we exceeded our targets by 12%. Our new enterprise clients contributed significantly to this growth.`,
+                hasQuiz: true,
+                quizQuestions: 10
+            },
+            {
+                id: 'listening-4',
+                title: 'Airport Check-in',
+                description: 'Travel conversation at airport check-in counter.',
+                audioUrl: 'YOUR_AUDIO_URL.mp3',
+                duration: '4 min',
+                difficulty: 'beginner',
+                tier: 'star', // Locked for free and grow users
+                hasTranscript: true,
+                transcript: 'Transcript to be added...',
+                hasQuiz: true,
+                quizQuestions: 6
+            },
+            {
+                id: 'listening-5',
+                title: 'Medical Consultation',
+                description: 'Patient talking with doctor about symptoms.',
+                audioUrl: 'YOUR_AUDIO_URL.mp3',
+                duration: '6 min',
+                difficulty: 'intermediate',
+                tier: 'star', // Locked for free and grow users
+                hasTranscript: true,
+                transcript: 'Transcript to be added...',
+                hasQuiz: true,
+                quizQuestions: 7
+            }
+        ];
+        
+        // Speaking Scenarios
+        const speakingScenarios = [
+            {
+                id: 'hotel',
+                icon: '🏨',
+                name: 'Sophie Laurent',
+                role: 'Hotel Receptionist',
+                description: 'Hotel check-in/out',
+                difficulty: 'beginner',
+                tier: 'free' // First 3 items available to preview
+            },
+            {
+                id: 'restaurant',
+                icon: '🍽️',
+                name: 'Maria Rodriguez',
+                role: 'Restaurant Server',
+                description: 'Ordering food & dining',
+                difficulty: 'beginner',
+                tier: 'free' // First 3 items available to preview
+            },
+            {
+                id: 'travel',
+                icon: '✈️',
+                name: 'John Smith',
+                role: 'Travel Agent',
+                description: 'Planning trips & bookings',
+                difficulty: 'beginner',
+                tier: 'free' // First 3 items available to preview
+            },
+            {
+                id: 'business',
+                icon: '💼',
+                name: 'David Chen',
+                role: 'Business Client',
+                description: 'Business meetings',
+                difficulty: 'advanced',
+                tier: 'star' // Locked for free and grow users
+            },
+            {
+                id: 'medical',
+                icon: '⚕️',
+                name: 'Dr. James Miller',
+                role: 'Medical Doctor',
+                description: 'Medical consultations',
+                difficulty: 'intermediate',
+                tier: 'star' // Locked for free and grow users
+            },
+            {
+                id: 'interview',
+                icon: '👔',
+                name: 'Sarah Johnson',
+                role: 'HR Manager',
+                description: 'Job interviews',
+                difficulty: 'intermediate',
+                tier: 'star' // Locked for free and grow users
+            }
+        ];
+
+        // Sample Quiz Data
+        const quizData = {
+            'grammar-1': {
+                title: 'Present Simple Tense Quiz',
+                questions: [
+                    {
+                        question: 'She _____ to school every day.',
+                        options: ['go', 'goes', 'going', 'gone'],
+                        correct: 1
+                    },
+                    {
+                        question: 'They _____ English very well.',
+                        options: ['speaks', 'speak', 'speaking', 'spoke'],
+                        correct: 1
+                    },
+                    {
+                        question: 'The sun _____ in the east.',
+                        options: ['rise', 'rises', 'rising', 'rose'],
+                        correct: 1
+                    }
+                ]
+            },
+            'grammar-2': {
+                title: 'Past Simple vs Present Perfect Quiz',
+                questions: [
+                    {
+                        question: 'I _____ to London last year.',
+                        options: ['have been', 'went', 'have gone', 'go'],
+                        correct: 1
+                    },
+                    {
+                        question: 'She _____ three books this month.',
+                        options: ['read', 'reads', 'has read', 'is reading'],
+                        correct: 2
+                    },
+                    {
+                        question: 'They _____ him since 2020.',
+                        options: ['know', 'knew', 'have known', 'are knowing'],
+                        correct: 2
+                    },
+                    {
+                        question: 'We _____ that movie yesterday.',
+                        options: ['have watched', 'watched', 'watch', 'are watching'],
+                        correct: 1
+                    }
+                ]
+            },
+            'grammar-3': {
+                title: 'Articles: A, An, The Quiz',
+                questions: [
+                    {
+                        question: 'I saw _____ elephant at the zoo.',
+                        options: ['a', 'an', 'the', 'no article'],
+                        correct: 1
+                    },
+                    {
+                        question: '_____ sun rises in the east.',
+                        options: ['A', 'An', 'The', 'No article'],
+                        correct: 2
+                    },
+                    {
+                        question: 'She is _____ honest person.',
+                        options: ['a', 'an', 'the', 'no article'],
+                        correct: 1
+                    },
+                    {
+                        question: 'I need _____ umbrella.',
+                        options: ['a', 'an', 'the', 'no article'],
+                        correct: 1
+                    }
+                ]
+            },
+            'book-1': {
+                title: 'The Little Prince Quiz',
+                questions: [
+                    {
+                        question: 'Where does the Little Prince come from?',
+                        options: ['Earth', 'An asteroid', 'The moon', 'Mars'],
+                        correct: 1
+                    },
+                    {
+                        question: 'What does the Little Prince ask the narrator to draw?',
+                        options: ['A rose', 'A sheep', 'A planet', 'A star'],
+                        correct: 1
+                    },
+                    {
+                        question: 'What is special about the Little Prince\'s rose?',
+                        options: ['It talks', 'It\'s very beautiful', 'It\'s unique to him', 'It can fly'],
+                        correct: 2
+                    }
+                ]
+            },
+            'book-2': {
+                title: 'Short Stories for ESL Quiz',
+                questions: [
+                    {
+                        question: 'What is the main purpose of graded readers?',
+                        options: ['Entertainment only', 'Learning vocabulary', 'Both learning and enjoyment', 'Grammar practice'],
+                        correct: 2
+                    },
+                    {
+                        question: 'Short stories help improve which skill the most?',
+                        options: ['Speaking', 'Reading comprehension', 'Writing', 'Listening'],
+                        correct: 1
+                    }
+                ]
+            },
+            'book-3': {
+                title: 'Business English Articles Quiz',
+                questions: [
+                    {
+                        question: 'In business English, what does "bottom line" mean?',
+                        options: ['The last sentence', 'The final result or profit', 'The lowest price', 'The deadline'],
+                        correct: 1
+                    },
+                    {
+                        question: 'What does "stakeholder" mean?',
+                        options: ['A person who holds stocks', 'Anyone affected by a business decision', 'A company owner', 'A board member'],
+                        correct: 1
+                    }
+                ]
+            },
+            'listening-1': {
+                title: 'Restaurant Conversation Quiz',
+                questions: [
+                    {
+                        question: 'How many people are in the party?',
+                        options: ['One', 'Two', 'Three', 'Four'],
+                        correct: 1
+                    },
+                    {
+                        question: 'What does the first customer order to drink?',
+                        options: ['Coke', 'Water', 'Coffee', 'Tea'],
+                        correct: 1
+                    }
+                ]
+            }
+        };
+        
+        // ===========================================
+        // ACCESS CONTROL HELPER
+        // ===========================================
+        
+        function hasAccess(contentTier) {
+            // Free plan: Only free content (Grammar only)
+            if (userMembershipTier === 'free') {
+                return contentTier === 'free';
+            }
+            // Grow plan: Free and Grow content (Grammar, Reading, Writing)
+            if (userMembershipTier === 'grow') {
+                return contentTier === 'free' || contentTier === 'grow';
+            }
+            // Star plan: All content
+            if (userMembershipTier === 'star') {
+                return true;
+            }
+            return false;
+        }
+
+        function getUpgradeMessage(contentTier) {
+            if (contentTier === 'grow' && userMembershipTier === 'free') {
+                return 'Upgrade to Grow Plan to access Reading and Writing features!';
+            }
+            if (contentTier === 'star' && (userMembershipTier === 'free' || userMembershipTier === 'grow')) {
+                return 'Upgrade to Star Plan (Premium) to access Listening and Speaking features!';
+            }
+            return 'Upgrade your membership to access this content!';
+        }
+        
+        // ===========================================
+        // INITIALIZATION
+        // ===========================================
+        
+        function initializePage() {
+            loadGrammar();
+            loadReading();
+            loadListening();
+            loadSpeaking();
+        }
+        
+        // ===========================================
+        // TAB SWITCHING
+        // ===========================================
+        
+        function switchTab(event, tabName) {
+            // Close any open content players before switching
+            if (document.getElementById('grammarVideoView').style.display === 'block') {
+                closeVideoPlayer();
+            }
+            if (document.getElementById('readingBookView').style.display === 'block') {
+                closeBookReader();
+            }
+            if (document.getElementById('listeningAudioView').style.display === 'block') {
+                closeAudioPlayer();
+            }
+            if (document.getElementById('speakingPracticeView').style.display === 'block') {
+                closeSpeakingPractice();
+            }
+            
+            // Switch tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        // ===========================================
+        // GRAMMAR TAB
+        // ===========================================
+        
+        function loadGrammar() {
+            const favorites = JSON.parse(localStorage.getItem('favoriteGrammar') || '[]');
+            renderGrammarVideos(grammarVideos, favorites);
+        }
+        
+        function renderGrammarVideos(videos, favorites) {
+            const grid = document.getElementById('grammarGrid');
+            
+            grid.innerHTML = videos.map(video => {
+                const isLocked = !hasAccess(video.tier);
+                const isFavorite = favorites.includes(video.id);
+                
+                return `
+                    <div class="content-card ${isLocked ? 'locked' : ''}">
+                        <div class="favorite-btn ${isFavorite ? 'favorited' : ''}" 
+                             onclick="toggleFavorite('grammar', '${video.id}', event)">
+                            ${isFavorite ? '★' : '☆'}
+                        </div>
+                        <div class="difficulty-tag difficulty-${video.difficulty}">
+                            ${video.difficulty}
+                        </div>
+                        <div class="card-title">${video.title}</div>
+                        <div class="card-description">${video.description}</div>
+                        <div class="card-meta">
+                            <span>⏱ ${video.duration}</span>
+                        </div>
+                        <button class="btn-primary" 
+                                onclick="${isLocked ? `showUpgradeModal('${video.tier}')` : `openVideo('${video.videoUrl}', '${video.id}')`}">
+                            ${isLocked ? lockIcon + ' Locked' : '▶️ Watch Video'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        let currentVideoId = null;
+        
+        function openVideo(url, videoId) {
+            if (!url || url === 'YOUR_YOUTUBE_EMBED_URL') {
+                alert('Please add your YouTube video URL in the code.\n\nFormat: https://www.youtube.com/embed/VIDEO_ID');
+                return;
+            }
+            
+            const video = grammarVideos.find(v => v.id === videoId);
+            if (!video) return;
+            
+            currentVideoId = videoId;
+            
+            document.getElementById('videoTitle').textContent = video.title;
+            document.getElementById('videoDescription').textContent = video.description;
+            document.getElementById('videoPlayer').src = url;
+            
+            document.getElementById('videoQuizBtn').style.display = video.hasQuiz ? 'block' : 'none';
+            
+            document.getElementById('grammarGridView').style.display = 'none';
+            document.getElementById('grammarVideoView').style.display = 'block';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function closeVideoPlayer() {
+            currentVideoId = null;
+            document.getElementById('videoPlayer').src = '';
+            document.getElementById('grammarVideoView').style.display = 'none';
+            document.getElementById('grammarGridView').style.display = 'block';
+        }
+        
+        // ===========================================
+        // READING TAB
+        // ===========================================
+        
+        function loadReading() {
+            const favorites = JSON.parse(localStorage.getItem('favoriteReading') || '[]');
+            renderReadingBooks(readingMaterials, favorites);
+        }
+        
+        function renderReadingBooks(books, favorites) {
+            const grid = document.getElementById('readingGrid');
+            
+            grid.innerHTML = books.map(book => {
+                const isLocked = !hasAccess(book.tier);
+                const isFavorite = favorites.includes(book.id);
+                
+                return `
+                    <div class="content-card ${isLocked ? 'locked' : ''}">
+                        <div class="favorite-btn ${isFavorite ? 'favorited' : ''}" 
+                             onclick="toggleFavorite('reading', '${book.id}', event)">
+                            ${isFavorite ? '★' : '☆'}
+                        </div>
+                        <div class="difficulty-tag difficulty-${book.difficulty}">
+                            ${book.difficulty}
+                        </div>
+                        <div class="card-title">${book.title}</div>
+                        <div class="card-description">by ${book.author}</div>
+                        <div class="card-description">${book.description}</div>
+                        <div class="card-meta">
+                            <span>📖 ${book.pages}</span>
+                            ${book.hasQuiz ? `<span>❓ ${book.quizQuestions} questions</span>` : ''}
+                        </div>
+                        <button class="btn-primary" 
+                                onclick="${isLocked ? `showUpgradeModal('${book.tier}')` : `openBook('${book.id}')`}">
+                            ${isLocked ? lockIcon + ' Locked' : '📚 Read Book'}
+                        </button>
+                        ${book.hasQuiz ? `
+                            <button class="btn-secondary" 
+                                    onclick="${isLocked ? `showUpgradeModal('${book.tier}')` : `openQuizModal('reading', '${book.id}')`}">
+                                ❓ Take Quiz
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        let currentBookId = null;
+        
+        function openBook(bookId) {
+            const book = readingMaterials.find(b => b.id === bookId);
+            if (!book) return;
+            
+            currentBookId = bookId;
+            
+            document.getElementById('bookTitle').textContent = book.title;
+            document.getElementById('bookAuthor').textContent = `by ${book.author}`;
+            
+            document.getElementById('bookQuizBtn').style.display = book.hasQuiz ? 'block' : 'none';
+            
+            document.getElementById('bookContent').innerHTML = `
+                <div style="color: #666; text-align: center; padding: 60px 20px;">
+                    <div style="font-size: 3em; margin-bottom: 20px;">📚</div>
+                    <h3 style="color: #A02334; margin-bottom: 15px;">${book.title}</h3>
+                    <p style="margin-bottom: 20px;">${book.description}</p>
+                    <div style="background: #FFEEAD; padding: 20px; border-radius: 8px; max-width: 600px; margin: 0 auto;">
+                        <strong>To display the book content:</strong><br><br>
+                        <strong>Option 1:</strong> Add book text directly in the data structure<br>
+                        <strong>Option 2:</strong> Use PDF.js to display PDF files<br>
+                        <strong>Option 3:</strong> Use iframe to embed external reader
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('readingGridView').style.display = 'none';
+            document.getElementById('readingBookView').style.display = 'block';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function closeBookReader() {
+            currentBookId = null;
+            document.getElementById('readingBookView').style.display = 'none';
+            document.getElementById('readingGridView').style.display = 'block';
+        }
+        
+        // ===========================================
+        // LISTENING TAB - FIXED
+        // ===========================================
+        
+        function loadListening() {
+            const favorites = JSON.parse(localStorage.getItem('favoriteListening') || '[]');
+            renderListeningExercises(listeningExercises, favorites);
+        }
+        
+        function renderListeningExercises(exercises, favorites) {
+            const grid = document.getElementById('listeningGrid');
+            
+            grid.innerHTML = exercises.map(exercise => {
+                const isLocked = !hasAccess(exercise.tier);
+                const isFavorite = favorites.includes(exercise.id);
+                
+                return `
+                    <div class="content-card ${isLocked ? 'locked' : ''}">
+                        <div class="favorite-btn ${isFavorite ? 'favorited' : ''}" 
+                             onclick="toggleFavorite('listening', '${exercise.id}', event)">
+                            ${isFavorite ? '★' : '☆'}
+                        </div>
+                        <div class="difficulty-tag difficulty-${exercise.difficulty}">
+                            ${exercise.difficulty}
+                        </div>
+                        <div class="card-title">${exercise.title}</div>
+                        <div class="card-description">${exercise.description}</div>
+                        <div class="card-meta">
+                            <span>🎧 ${exercise.duration}</span>
+                            ${exercise.hasQuiz ? `<span>❓ ${exercise.quizQuestions} questions</span>` : ''}
+                        </div>
+                        <button class="btn-primary" 
+                                onclick="${isLocked ? `showUpgradeModal('${exercise.tier}')` : `playAudio('${exercise.id}')`}">
+                            ${isLocked ? lockIcon + ' Locked' : '🎧 Listen'}
+                        </button>
+                        ${exercise.hasQuiz ? `
+                            <button class="btn-secondary" 
+                                    onclick="${isLocked ? `showUpgradeModal('${exercise.tier}')` : `openQuizModal('listening', '${exercise.id}')`}">
+                                ❓ Take Quiz
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        let currentAudioId = null;
+        
+        function playAudio(audioId) {
+            const exercise = listeningExercises.find(e => e.id === audioId);
+            if (!exercise) return;
+            
+            currentAudioId = audioId;
+            
+            document.getElementById('audioTitle').textContent = exercise.title;
+            document.getElementById('audioDescription').textContent = exercise.description;
+            
+            const audioElement = document.getElementById('audioElement');
+            
+            if (exercise.audioUrl && exercise.audioUrl !== 'YOUR_AUDIO_URL.mp3') {
+                audioElement.src = exercise.audioUrl;
+                audioElement.load();
+            } else {
+                audioElement.src = '';
+                audioElement.parentElement.innerHTML = `
+                    <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">🎧</div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+                        <p style="color: #666; margin-bottom: 10px;">
+                            <strong>Audio file not yet added</strong>
+                        </p>
+                        <p style="color: #888; font-size: 0.9em;">
+                            Generate audio with ElevenLabs or upload your own MP3 file.
+                        </p>
+                    </div>
+                    <audio id="audioElement" controls style="width: 100%; margin-bottom: 15px;">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="setPlaybackSpeed(0.75)" class="filter-btn" style="font-size: 0.85em;">
+                            0.75x (Slow)
+                        </button>
+                        <button onclick="setPlaybackSpeed(1)" class="filter-btn active" id="speedNormal" style="font-size: 0.85em;">
+                            1x (Normal)
+                        </button>
+                        <button onclick="setPlaybackSpeed(1.25)" class="filter-btn" style="font-size: 0.85em;">
+                            1.25x (Fast)
+                        </button>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('audioQuizBtn').style.display = exercise.hasQuiz ? 'block' : 'none';
+            
+            const transcriptSection = document.getElementById('transcriptSection');
+            if (exercise.hasTranscript && exercise.transcript) {
+                transcriptSection.style.display = 'block';
+                document.getElementById('transcriptContent').innerHTML = `<div style="white-space: pre-wrap;">${exercise.transcript}</div>`;
+            } else {
+                transcriptSection.style.display = 'none';
+            }
+            
+            document.getElementById('transcriptContainer').style.display = 'none';
+            document.getElementById('transcriptToggleBtn').textContent = '📝 Show Transcript';
+            
+            document.getElementById('listeningGridView').style.display = 'none';
+            document.getElementById('listeningAudioView').style.display = 'block';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function closeAudioPlayer() {
+            currentAudioId = null;
+            
+            const audioElement = document.getElementById('audioElement');
+            audioElement.pause();
+            audioElement.src = '';
+            
+            document.getElementById('listeningAudioView').style.display = 'none';
+            document.getElementById('listeningGridView').style.display = 'block';
+        }
+        
+        function toggleTranscript() {
+            const container = document.getElementById('transcriptContainer');
+            const btn = document.getElementById('transcriptToggleBtn');
+            
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                btn.textContent = '📝 Hide Transcript';
+            } else {
+                container.style.display = 'none';
+                btn.textContent = '📝 Show Transcript';
+            }
+        }
+        
+        function setPlaybackSpeed(speed) {
+            const audioElement = document.getElementById('audioElement');
+            audioElement.playbackRate = speed;
+            
+            document.querySelectorAll('#listeningAudioView .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        // ===========================================
+        // SPEAKING TAB
+        // ===========================================
+        
+        function loadSpeaking() {
+            const favorites = JSON.parse(localStorage.getItem('favoriteSpeaking') || '[]');
+            renderSpeakingScenarios(speakingScenarios, favorites);
+        }
+        
+        function renderSpeakingScenarios(scenarios, favorites) {
+            const grid = document.getElementById('speakingGrid');
+            
+            grid.innerHTML = scenarios.map(scenario => {
+                const isLocked = !hasAccess(scenario.tier);
+                const isFavorite = favorites.includes(scenario.id);
+                
+                return `
+                    <div class="scenario-card">
+                        <div class="favorite-btn ${isFavorite ? 'favorited' : ''}" 
+                             onclick="toggleFavorite('speaking', '${scenario.id}', event)">
+                            ${isFavorite ? '★' : '☆'}
+                        </div>
+                        <span class="difficulty-tag difficulty-${scenario.difficulty}" style="position: absolute; top: 15px; right: 15px;">
+                            ${scenario.difficulty}
+                        </span>
+                        <div onclick="${isLocked ? `showUpgradeModal('${scenario.tier}')` : `startScenario('${scenario.id}')`}">
+                            <div class="scenario-icon">${scenario.icon}</div>
+                            <div class="scenario-name">${scenario.name}</div>
+                            <div class="scenario-role">${scenario.role}</div>
+                            <div class="scenario-description">${scenario.description}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        let currentScenario = null;
+        let conversationHistory = [];
+        
+        function startScenario(scenarioId) {
+            // Find scenario data
+            const scenario = speakingScenarios.find(s => s.id === scenarioId);
+            if (!scenario) return;
+            
+            currentScenario = scenario;
+            conversationHistory = [];
+            
+            // Update scenario info
+            document.getElementById('scenarioIcon').textContent = scenario.icon;
+            document.getElementById('scenarioName').textContent = scenario.name;
+            document.getElementById('scenarioRole').textContent = scenario.role;
+            document.getElementById('scenarioDescription').textContent = `Practice ${scenario.description}`;
+            
+            // Clear chat and add welcome message
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = '';
+            
+            // Add AI greeting
+            const greeting = getGreeting(scenario);
+            addMessageToChat('ai', scenario.name, greeting);
+            conversationHistory.push({ role: 'assistant', content: greeting });
+            
+            // Show practice view
+            document.getElementById('speakingGridView').style.display = 'none';
+            document.getElementById('speakingPracticeView').style.display = 'block';
+            
+            // Focus on input
+            document.getElementById('messageInput').focus();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function closeSpeakingPractice() {
+            currentScenario = null;
+            conversationHistory = [];
+            document.getElementById('messageInput').value = '';
+            document.getElementById('speakingPracticeView').style.display = 'none';
+            document.getElementById('speakingGridView').style.display = 'block';
+        }
+        
+        function getGreeting(scenario) {
+            const greetings = {
+                'hotel': "Good afternoon! Welcome to Grand Hotel. How may I assist you today?",
+                'restaurant': "Hello! Welcome to Mario's Restaurant. Table for how many?",
+                'travel': "Good morning! I'm here to help you plan your perfect trip. Where would you like to go?",
+                'business': "Good morning. Thank you for meeting with me today. Shall we discuss the proposal?",
+                'medical': "Hello, please have a seat. What brings you in today?",
+                'interview': "Good morning! Thank you for coming in. Please, tell me about yourself."
+            };
+            return greetings[scenario.id] || "Hello! How can I help you today?";
+        }
+        
+        function addMessageToChat(sender, name, message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}`;
+            messageDiv.innerHTML = `
+                <div class="sender">${name}</div>
+                <div>${message}</div>
+            `;
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            const chatArea = document.getElementById('chatArea');
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        function showTypingIndicator() {
+            const chatMessages = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typingIndicator';
+            typingDiv.className = 'typing-indicator';
+            typingDiv.innerHTML = '<span></span><span></span><span></span>';
+            chatMessages.appendChild(typingDiv);
+            
+            const chatArea = document.getElementById('chatArea');
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message || !currentScenario) return;
+            
+            // Add user message
+            addMessageToChat('user', 'You', message);
+            conversationHistory.push({ role: 'user', content: message });
+            
+            // Clear input
+            input.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Get AI response (simulated delay)
+            setTimeout(async () => {
+                const aiResponse = await getAIResponse(message);
+                removeTypingIndicator();
+                addMessageToChat('ai', currentScenario.name, aiResponse);
+                conversationHistory.push({ role: 'assistant', content: aiResponse });
+            }, 1500);
+        }
+        
+        async function getAIResponse(userMessage) {
+            // TODO: Integrate with OpenAI or Claude API here
+            // This is a DEMO response generator
+            
+            const demoResponses = {
+                'hotel': [
+                    "Certainly! Let me check our availability for you. What dates are you looking at?",
+                    "Perfect! We have rooms available. Would you prefer a single or double room?",
+                    "Great choice! Let me get that reservation set up for you right away.",
+                    "May I have your name and contact information, please?"
+                ],
+                'restaurant': [
+                    "Perfect! Right this way. Here's your table. Can I start you with drinks?",
+                    "Excellent choice! Our chef's special today is absolutely delicious.",
+                    "Of course! I'll put that order in for you right away.",
+                    "Would you like to see our dessert menu?"
+                ],
+                'travel': [
+                    "That sounds wonderful! What time of year were you thinking of visiting?",
+                    "Great! I can help you find the best flights and accommodations.",
+                    "I'd recommend visiting during the spring - the weather is perfect!",
+                    "Let me put together a package for you with flights and hotel."
+                ],
+                'business': [
+                    "I appreciate your perspective on this. Let's discuss the budget.",
+                    "That's a good point. Have you considered the implementation timeline?",
+                    "I think we can move forward with this. What are the next steps?",
+                    "Excellent. I'll prepare the documents and we can finalize this week."
+                ],
+                'medical': [
+                    "I see. How long have you been experiencing these symptoms?",
+                    "Let me examine that for you. Does this area hurt when I press here?",
+                    "Based on what you've told me, I'd like to run some tests.",
+                    "I'm going to prescribe something that should help. Take this twice daily."
+                ],
+                'interview': [
+                    "That's impressive experience. Can you tell me about a challenging project you worked on?",
+                    "I like your approach to problem-solving. What are your salary expectations?",
+                    "Those skills would be valuable here. Do you have any questions about the role?",
+                    "Thank you for your time today. We'll be in touch within a week."
+                ]
+            };
+            
+            // Get responses for current scenario
+            const responses = demoResponses[currentScenario.id] || [
+                "That's interesting. Could you tell me more?",
+                "I understand. How can I help you with that?",
+                "Great! Let's continue with that.",
+                "Thank you for sharing. What else would you like to discuss?"
+            ];
+            
+            // Return random response (in production, call AI API here)
+            const response = responses[Math.floor(Math.random() * responses.length)];
+            
+            // TODO: Replace above with actual API call like this:
+            /*
+            const apiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer YOUR_API_KEY',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: `You are ${currentScenario.name}, a ${currentScenario.role}. 
+                                     Have a natural conversation about ${currentScenario.description}.
+                                     Keep responses brief (2-3 sentences) and conversational.`
+                        },
+                        ...conversationHistory
+                    ],
+                    max_tokens: 150
+                })
+            });
+            const data = await apiResponse.json();
+            return data.choices[0].message.content;
+            */
+            
+            return response;
+        }
+        
+        function startVoiceInput() {
+            // Check if browser supports speech recognition
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert('Sorry, your browser does not support voice input. Please use Chrome, Edge, or Safari.');
+                return;
+            }
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            
+            recognition.lang = 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            recognition.onstart = function() {
+                document.getElementById('messageInput').placeholder = '🎤 Listening... Speak now';
+            };
+            
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('messageInput').value = transcript;
+                document.getElementById('messageInput').placeholder = 'Type your message here...';
+            };
+            
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                document.getElementById('messageInput').placeholder = 'Type your message here...';
+                alert('Could not recognize speech. Please try again or type your message.');
+            };
+            
+            recognition.onend = function() {
+                document.getElementById('messageInput').placeholder = 'Type your message here...';
+            };
+            
+            recognition.start();
+        }
+        
+        // ===========================================
+        // WRITING TAB
+        // ===========================================
+        
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('writingInput').value = e.target.result;
+            };
+            reader.readAsText(file);
+        }
+        
+        function correctWriting() {
+            // Check if user has access to Writing feature
+            if (!hasAccess('grow')) {
+                showUpgradeModal('grow');
+                return;
+            }
+
+            const text = document.getElementById('writingInput').value.trim();
+            
+            if (!text) {
+                alert('Please write or upload your essay first.');
+                return;
+            }
+            
+            const wordCount = text.split(/\s+/).length;
+            const maxWords = (userMembershipTier === 'grow' || userMembershipTier === 'star') ? 1000 : 300;
+            
+            if (wordCount > maxWords) {
+                alert(`Your text exceeds the ${maxWords} word limit for ${userMembershipTier} members.`);
+                return;
+            }
+            
+            if (userMembershipTier === 'free') {
+                const usageCount = parseInt(localStorage.getItem('writingUsageCount') || '0');
+                if (usageCount >= 3) {
+                    showUpgradeModal('grow');
+                    return;
+                }
+                localStorage.setItem('writingUsageCount', (usageCount + 1).toString());
+            }
+            
+            // TODO: Call Claude API here
+            demoCorrection(text);
+        }
+        
+        function demoCorrection(originalText) {
+            document.getElementById('originalText').innerHTML = originalText.replace(
+                /\b(was)\b/g, 
+                '<span class="error-highlight">was</span>'
+            );
+            
+            document.getElementById('correctedText').textContent = originalText.replace(/was/g, 'were');
+            
+            document.getElementById('explanations').innerHTML = `
+                <div class="correction-item">
+                    <strong>❌ "was" → ✓ "were"</strong><br>
+                    <em>Error Type:</em> Subject-verb agreement<br>
+                    <em>Explanation:</em> When the subject is plural, use "were" instead of "was".
+                </div>
+                <div class="correction-item">
+                    <strong>💡 Integration Note:</strong><br>
+                    This is a demo correction. Integrate Claude API in the <code>correctWriting()</code> function for real AI corrections.
+                </div>
+            `;
+            
+            document.getElementById('correctionDisplay').classList.add('active');
+        }
+        
+        function downloadCorrection() {
+            const correctedText = document.getElementById('correctedText').textContent;
+            const blob = new Blob([correctedText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'corrected_essay.txt';
+            a.click();
+        }
+        
+        // ===========================================
+        // QUIZ MODAL - WITH SCORE MEMORY
+        // ===========================================
+        
+        function openQuizModal(section, itemId) {
+            const quiz = quizData[itemId];
+            
+            if (!quiz) {
+                alert(`Quiz for ${itemId} is being created. You can add your own questions to the quizData object.`);
+                return;
+            }
+
+            const modal = document.getElementById('quizModalOverlay');
+            document.getElementById('quizModalTitle').textContent = quiz.title;
+            
+            // Check if user has taken this quiz before
+            const savedScore = localStorage.getItem(`quiz_score_${itemId}`);
+            
+            if (savedScore) {
+                // User has taken quiz before - show their score
+                const scoreData = JSON.parse(savedScore);
+                showQuizScore(itemId, scoreData.score, scoreData.total, scoreData.percentage, true);
+            } else {
+                // User hasn't taken quiz - show quiz questions
+                showQuizQuestions(itemId, quiz);
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function showQuizQuestions(itemId, quiz) {
+            let questionsHTML = '';
+            quiz.questions.forEach((q, index) => {
+                questionsHTML += `
+                    <div class="quiz-question">
+                        <h4>Question ${index + 1}: ${q.question}</h4>
+                        <div class="quiz-options">
+                            ${q.options.map((option, optIndex) => `
+                                <label class="quiz-option">
+                                    <input type="radio" name="q${index}" value="${optIndex}">
+                                    <span>${option}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            questionsHTML += `
+                <button class="quiz-submit-btn" onclick="submitQuiz('${itemId}')">
+                    Submit Quiz
+                </button>
+                <div class="quiz-results" id="quizResults">
+                    <div class="quiz-score" id="quizScore"></div>
+                    <p id="quizMessage"></p>
+                    <div style="display: flex; gap: 15px; margin-top: 20px; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn-primary" onclick="retakeQuiz()" style="max-width: 200px;">
+                            🔄 Retake Quiz
+                        </button>
+                        <button class="btn-secondary" onclick="closeQuizModal()" style="max-width: 200px;">
+                            ✓ Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('quizModalContent').innerHTML = questionsHTML;
+        }
+        
+        function showQuizScore(itemId, score, total, percentage, isFromStorage = false) {
+            // Determine grade emoji
+            let gradeEmoji = '💪';
+            let gradeText = 'Keep practicing!';
+            if (percentage >= 90) {
+                gradeEmoji = '🌟';
+                gradeText = 'Outstanding! Perfect score!';
+            } else if (percentage >= 80) {
+                gradeEmoji = '🎉';
+                gradeText = 'Excellent work!';
+            } else if (percentage >= 70) {
+                gradeEmoji = '👍';
+                gradeText = 'Good job!';
+            }
+            
+            const contentHTML = `
+                <div style="text-align: center; padding: 40px 20px;">
+                    <div class="quiz-score" style="font-size: 4em; color: #A02334; font-weight: bold; margin-bottom: 20px;">
+                        ${percentage}%
+                    </div>
+                    <div style="font-size: 1.3em; margin-bottom: 15px;">
+                        <strong>Score: ${score} / ${total}</strong>
+                    </div>
+                    <div style="font-size: 3em; margin: 20px 0;">${gradeEmoji}</div>
+                    <div style="font-size: 1.2em; color: #666; margin-bottom: 30px;">
+                        ${gradeText}
+                    </div>
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn-primary" onclick="retakeQuizFromScore('${itemId}')" style="max-width: 200px;">
+                            🔄 Retake Quiz
+                        </button>
+                        <button class="btn-secondary" onclick="closeQuizModal()" style="max-width: 200px;">
+                            ✓ Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('quizModalContent').innerHTML = contentHTML;
+        }
+        
+        function retakeQuizFromScore(itemId) {
+            const quiz = quizData[itemId];
+            if (quiz) {
+                showQuizQuestions(itemId, quiz);
+            }
+        }
+        
+        function submitQuiz(itemId) {
+            const quiz = quizData[itemId];
+            if (!quiz) return;
+            
+            let score = 0;
+            quiz.questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected && parseInt(selected.value) === q.correct) {
+                    score++;
+                }
+            });
+            
+            const total = quiz.questions.length;
+            const percentage = Math.round((score / total) * 100);
+            
+            // Save score to localStorage
+            const scoreData = {
+                score: score,
+                total: total,
+                percentage: percentage,
+                date: new Date().toISOString()
+            };
+            localStorage.setItem(`quiz_score_${itemId}`, JSON.stringify(scoreData));
+            
+            document.querySelectorAll('.quiz-question').forEach(q => q.style.display = 'none');
+            document.querySelector('.quiz-submit-btn').style.display = 'none';
+            
+            const resultsDiv = document.getElementById('quizResults');
+            document.getElementById('quizScore').textContent = `${percentage}%`;
+            
+            // Determine grade emoji
+            let gradeEmoji = '💪';
+            let gradeText = 'Keep practicing!';
+            if (percentage >= 90) {
+                gradeEmoji = '🌟';
+                gradeText = 'Outstanding! Perfect score!';
+            } else if (percentage >= 80) {
+                gradeEmoji = '🎉';
+                gradeText = 'Excellent work!';
+            } else if (percentage >= 70) {
+                gradeEmoji = '👍';
+                gradeText = 'Good job!';
+            }
+            
+            document.getElementById('quizMessage').innerHTML = `
+                <div style="font-size: 1.2em; margin-bottom: 15px;">
+                    <strong>Score: ${score} / ${total}</strong>
+                </div>
+                <div style="font-size: 2em; margin: 15px 0;">${gradeEmoji}</div>
+                <div style="font-size: 1.1em; color: #666;">
+                    ${gradeText}
+                </div>
+            `;
+            resultsDiv.classList.add('active');
+            
+            // Store current itemId for retake
+            resultsDiv.setAttribute('data-quiz-id', itemId);
+        }
+        
+        function retakeQuiz() {
+            const resultsDiv = document.getElementById('quizResults');
+            const itemId = resultsDiv.getAttribute('data-quiz-id');
+            
+            // Close and reopen the quiz
+            closeQuizModal();
+            setTimeout(() => {
+                // Determine section from itemId
+                let section = 'grammar';
+                if (itemId.startsWith('book-')) section = 'reading';
+                if (itemId.startsWith('listening-')) section = 'listening';
+                
+                openQuizModal(section, itemId);
+            }, 300);
+        }
+        
+        function closeQuizModal() {
+            const modal = document.getElementById('quizModalOverlay');
+            modal.classList.remove('active');
+            
+            setTimeout(() => {
+                document.getElementById('quizModalContent').innerHTML = '';
+            }, 300);
+        }
+        
+        // ===========================================
+        // FAVORITES & FILTERS
+        // ===========================================
+        
+        function toggleFavorite(section, itemId, event) {
+            event.stopPropagation();
+            const storageKey = `favorite${section.charAt(0).toUpperCase() + section.slice(1)}`;
+            const favorites = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            const index = favorites.indexOf(itemId);
+            
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(itemId);
+            }
+            
+            localStorage.setItem(storageKey, JSON.stringify(favorites));
+            
+            const activeBtn = document.querySelector(`#${section} .filter-btn.active`);
+            if (activeBtn) {
+                const filterText = activeBtn.textContent.trim();
+                let currentFilter = 'all';
+                
+                if (filterText.includes('Favorites')) {
+                    currentFilter = 'favorites';
+                } else if (filterText.toLowerCase().includes('beginner')) {
+                    currentFilter = 'beginner';
+                } else if (filterText.toLowerCase().includes('intermediate')) {
+                    currentFilter = 'intermediate';
+                } else if (filterText.toLowerCase().includes('advanced')) {
+                    currentFilter = 'advanced';
+                }
+                
+                switch(section) {
+                    case 'grammar': filterGrammar(currentFilter); break;
+                    case 'reading': filterReading(currentFilter); break;
+                    case 'listening': filterListening(currentFilter); break;
+                    case 'speaking': filterSpeaking(currentFilter); break;
+                }
+            }
+        }
+        
+        function filterContent(section, filter) {
+            const filterButtons = document.querySelectorAll(`#${section} .filter-btn`);
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            switch(section) {
+                case 'grammar': filterGrammar(filter); break;
+                case 'reading': filterReading(filter); break;
+                case 'listening': filterListening(filter); break;
+                case 'speaking': filterSpeaking(filter); break;
+            }
+        }
+        
+        function filterGrammar(filter) {
+            const favorites = JSON.parse(localStorage.getItem('favoriteGrammar') || '[]');
+            
+            if (filter === 'all') {
+                loadGrammar();
+                return;
+            }
+            
+            let filteredVideos = grammarVideos;
+            
+            if (filter === 'favorites') {
+                filteredVideos = grammarVideos.filter(video => favorites.includes(video.id));
+                if (filteredVideos.length === 0) {
+                    showNoFavoritesMessage('grammarGrid', 'videos');
+                    return;
+                }
+            } else {
+                filteredVideos = grammarVideos.filter(video => video.difficulty === filter);
+            }
+            
+            renderGrammarVideos(filteredVideos, favorites);
+        }
+        
+        function filterReading(filter) {
+            const favorites = JSON.parse(localStorage.getItem('favoriteReading') || '[]');
+            
+            if (filter === 'all') {
+                loadReading();
+                return;
+            }
+            
+            let filteredBooks = readingMaterials;
+            
+            if (filter === 'favorites') {
+                filteredBooks = readingMaterials.filter(book => favorites.includes(book.id));
+                if (filteredBooks.length === 0) {
+                    showNoFavoritesMessage('readingGrid', 'books');
+                    return;
+                }
+            } else {
+                filteredBooks = readingMaterials.filter(book => book.difficulty === filter);
+            }
+            
+            renderReadingBooks(filteredBooks, favorites);
+        }
+        
+        function filterListening(filter) {
+            const favorites = JSON.parse(localStorage.getItem('favoriteListening') || '[]');
+            
+            if (filter === 'all') {
+                loadListening();
+                return;
+            }
+            
+            let filteredExercises = listeningExercises;
+            
+            if (filter === 'favorites') {
+                filteredExercises = listeningExercises.filter(ex => favorites.includes(ex.id));
+                if (filteredExercises.length === 0) {
+                    showNoFavoritesMessage('listeningGrid', 'exercises');
+                    return;
+                }
+            } else {
+                filteredExercises = listeningExercises.filter(ex => ex.difficulty === filter);
+            }
+            
+            renderListeningExercises(filteredExercises, favorites);
+        }
+        
+        function filterSpeaking(filter) {
+            const favorites = JSON.parse(localStorage.getItem('favoriteSpeaking') || '[]');
+            
+            if (filter === 'all') {
+                loadSpeaking();
+                return;
+            }
+            
+            let filteredScenarios = speakingScenarios;
+            
+            if (filter === 'favorites') {
+                filteredScenarios = speakingScenarios.filter(sc => favorites.includes(sc.id));
+                if (filteredScenarios.length === 0) {
+                    showNoFavoritesMessage('speakingGrid', 'scenarios');
+                    return;
+                }
+            } else {
+                filteredScenarios = speakingScenarios.filter(sc => sc.difficulty === filter);
+            }
+            
+            renderSpeakingScenarios(filteredScenarios, favorites);
+        }
+        
+        function showNoFavoritesMessage(gridId, itemType) {
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; background: white; border-radius: 12px;">
+                    <div style="font-size: 3em; margin-bottom: 15px;">⭐</div>
+                    <h3 style="font-family: 'Darumadrop One', cursive; color: #A02334; font-size: 1.5em; margin-bottom: 10px; font-weight: 400;">
+                        No Favorites Yet
+                    </h3>
+                    <p style="color: #666; font-size: 1.1em;">
+                        Click the ☆ icon on any ${itemType} to add it to your favorites!
+                    </p>
+                </div>
+            `;
+        }
+        
+        // ===========================================
+        // UPGRADE MODAL
+        // ===========================================
+        
+        function showUpgradeModal(tier) {
+            const message = getUpgradeMessage(tier);
+            document.getElementById('upgradeMessage').textContent = message;
+            document.getElementById('upgradeOverlay').classList.add('active');
+        }
+        
+        function closeUpgradeModal() {
+            document.getElementById('upgradeOverlay').classList.remove('active');
+        }
+        
+        function goToUpgrade() {
+            window.location.href = '/pricing'; // Update with your pricing page URL
+        }
+        
+        // ===========================================
+        // INITIALIZE ON LOAD
+        // ===========================================
+        
+        initializePage();
+    </script>
+</body>
+</html>
